@@ -10,16 +10,13 @@ class Main {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        long invs = mergeSort(array, size);
-        System.out.println(invs);
+        System.out.println(mergeSort(array, size));
     }
 
-    private static long mergeSort(int[] array, int size) {
-        long inversions = 0;
+    public static long mergeSort(int[] array, int size) {
         if (size < 2) {
-            return inversions;
+            return 0L;
         }
-
 
         int middle = array.length / 2;
         int[] left = new int[middle];
@@ -33,10 +30,12 @@ class Main {
             right[i - middle] = array[i];
         }
 
-        mergeSort(left, middle);
-        mergeSort(right, array.length - middle);
-        inversions += merge(array, left, right);
-        return inversions;
+        // тут прибавляем прибавляем то, что вернулась с предыдущего уровня рекурсии
+        long invLeft = mergeSort(left, middle);
+        long invRight = mergeSort(right, array.length - middle);
+        // и добавляем значение, которое получилось на текущем уровне рекурсии
+        long invsMerge = merge(array, left, right);
+        return invLeft + invRight + invsMerge;
     }
 
     private static long merge(int[] array, int[] left, int[] right) {
@@ -50,7 +49,7 @@ class Main {
         int rLen = right.length;
 
         while (lPos < lLen && rPos < rLen) {
-            if (left[lPos] < right[rPos]) {
+            if (left[lPos] <= right[rPos]) {
                 array[resPos++] = left[lPos++];
             } else {
                 array[resPos++] = right[rPos++];
